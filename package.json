@@ -1,0 +1,8 @@
+{
+  "name": "my-vishlist-platform",
+  "packageManager": "yarn@3.5.0",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
+}
