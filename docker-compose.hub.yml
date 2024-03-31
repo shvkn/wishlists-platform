@@ -1,0 +1,59 @@
+version: "3.9"
+services:
+  database:
+    image: "postgres:12"
+    environment:
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    env_file:
+      - .env
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - $DB_PORT:5432
+    networks:
+      - backend
+    restart: unless-stopped
+  backend:
+    image: shvkn/wishlists-backend:latest
+    # environment:
+    #   - DB_DATABASE=${DB_DATABASE}
+    #   - DB_USERNAME=${DB_USERNAME}
+    #   - DB_PASSWORD=${DB_PASSWORD}
+    #   - DB_HOST=${DB_HOST:-database}
+    #   - DB_PORT=${DB_PORT:-5432}
+    #   - JWT_SECRET=${JWT_SECRET}
+    #   - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-24h}
+    #   - SWAGGER_API_PATH=${SWAGGER_API_PATH:-api}
+    #   - PORT=${PORT:-4000}
+    expose:
+      - ${PORT:-4000}
+    ports:
+      - ${PORT:-4000}:${PORT:-4000}
+    links:
+      - database:postgres
+    depends_on:
+      - database
+    networks:
+      - backend
+      - frontend
+    restart: unless-stopped
+  frontend:
+    image: shvkn/wishlists-frontend:latest
+    # environment:
+    #   - FRONTEND_APP_PORT=${FRONTEND_APP_PORT:-8081}
+    depends_on:
+      - backend
+    ports:
+      - ${FRONTEND_APP_PORT:-8081}:80
+    networks:
+      - frontend
+    restart: unless-stopped
+volumes:
+  pg-data:
+
+networks:
+  backend:
+    internal: true
+  frontend:
